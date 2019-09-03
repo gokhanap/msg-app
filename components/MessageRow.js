@@ -5,6 +5,7 @@ export default class MessageRow extends React.Component {
 
   render() {
     const { data } = this.props;
+    // console.log(this.props.data);
 
     return (
       <View style={styles.container}>
@@ -24,7 +25,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'row',
-    padding: 22,
+    padding: 12,
     marginRight: 96,
   },
   imgContainer: {

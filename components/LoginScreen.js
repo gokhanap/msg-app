@@ -1,33 +1,35 @@
 import React from 'react';
-import { AsyncStorage, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
+import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
+import { connect } from 'react-redux';
+import { loginAsync, fetchUserAsync } from '../actions';
 
-export default class LoginScreen extends React.Component {
+class LoginScreen extends React.Component {
   state = {
     nickname: '',
     error: false,
   };
 
-  login = async () => {
-    const isValid = this.state.nickname.trim().length > 1;
+  bootstrapAsync = () => {
+    this.props.fetchUser()
+    .then(data => data && this.props.navigation.navigate('App'))
+  };
+
+  handleLogin = async () => {
+    const { nickname } = this.state;
+    const isValid = nickname.trim().length > 1;
 
     if(isValid) {
-      await AsyncStorage.setItem('nickname', this.state.nickname);
-      return this.props.navigation.navigate('App');
+      return this.props.login(nickname).then(() => this.props.navigation.navigate('App'));
     }
     this.setState({error: true});
-  }
-
-  bootstrapAsync = async () => {
-    const nickname = await AsyncStorage.getItem('nickname');
-    nickname && this.props.navigation.navigate('App');
-  }
+  };
 
   componentDidMount() {
     this.bootstrapAsync();
-  }
+  };
 
   render() {
-    const { error } = this.state;
+    const { error, nickname } = this.state;
 
     return (
       <KeyboardAvoidingView behavior='padding' style={styles.container}>
@@ -36,12 +38,12 @@ export default class LoginScreen extends React.Component {
           placeholder='Type your name'
           autoCorrect={false}
           onChangeText={nickname => this.setState({ nickname, error: false })}
-          value={this.props.nickname}
-        />
+          value={nickname}
+          />
         {error ?
           <Text style={styles.error}>Nickname should be at least 2 characters</Text>
           :
-          <TouchableOpacity style={styles.button} onPress={this.login}>
+          <TouchableOpacity style={styles.button} onPress={this.handleLogin}>
             <Text>Continue</Text>
           </TouchableOpacity>
         }
@@ -74,3 +76,14 @@ const styles = StyleSheet.create({
     padding: 12,
   },
 });
+
+const mapStateToProps = state => ({
+    nickname: state.nickname
+});
+
+const mapDispatchToProps = dispatch => ({
+  login: (nickname) => dispatch(loginAsync(nickname)),
+  fetchUser: () => dispatch(fetchUserAsync())
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen);

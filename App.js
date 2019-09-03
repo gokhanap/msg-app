@@ -1,22 +1,12 @@
 import React from 'react';
-import { createAppContainer, createSwitchNavigator } from 'react-navigation';
-
-import LoginScreen from './components/LoginScreen'
-import MessagesScreen from './components/MessagesScreen'
+import { Provider } from 'react-redux'
+import store from './store'
+import Navigation from './components/Navigation'
 
 export default function App() {
   return (
-    <Navigation />
+    <Provider store={store}>
+      <Navigation />
+    </Provider>
   );
-}
-
-const Navigation = createAppContainer(
-  createSwitchNavigator({
-    Login: LoginScreen,
-    App: MessagesScreen,
-  },
-    {
-      initialRouteName: 'Login',
-    }
-  )
-);
+};

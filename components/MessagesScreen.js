@@ -1,40 +1,49 @@
 import React from 'react';
-import { AsyncStorage, FlatList, KeyboardAvoidingView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { FlatList, KeyboardAvoidingView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Constants from 'expo-constants';
+import { connect } from 'react-redux';
 
-import data from '../data';
+import { fetchMessagesAsync, logoutAsync, addMessage } from '../actions';
 import MessageRow from './MessageRow';
 
-export default class MessagesScreen extends React.Component {
+class MessagesScreen extends React.Component {
   state = {
-    text: '',
+    message: '',
   };
 
-  leave = async () => {
-    await AsyncStorage.clear();
-    this.props.navigation.navigate('Login');
-  }
+  handleLeave = () => {
+    this.props.logout().then(() => this.props.navigation.navigate('Login'));
+  };
 
-  sendMessage = async () => {
-    // this.props.navigation.navigate('Login');
-  }
+  handleSend = async () => {
+    const { message } = this.state;
+    const { nickname, send } = this.props;
+    console.log('handlesend', message, nickname);
+    send(message, nickname);
+    this.setState({message: ''});
+  };
+
+  componentDidMount() {
+    this.props.fetchMessages();
+  };
 
   render() {
-    // console.log(data);
+    const { messages, nickname } = this.props;
+
     return (
       <KeyboardAvoidingView style={styles.container} behavior='padding'>
 
         <StatusBar barStyle="light-content" />
 
         <View style={styles.header}>
-          <TouchableOpacity style={styles.leaveBtn} onPress={this.leave}>
+          <TouchableOpacity style={styles.leaveBtn} onPress={this.handleLeave}>
             <Text>Leave</Text>
           </TouchableOpacity>
-          <Text style={styles.title}>Nickname</Text>
+          <Text style={styles.title}>{nickname}</Text>
         </View>
 
         <FlatList
-          data={data}
+          data={messages}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({item}) => <MessageRow data={item} />}
         />
@@ -44,13 +53,13 @@ export default class MessagesScreen extends React.Component {
             style={styles.input}
             placeholder='Type your Message'
             autoCorrect={false}
-            value={this.state.text}
-            onChangeText={text => this.setState({text})}
+            value={this.state.message}
+            onChangeText={message => this.setState({message})}
           />
-          <TouchableOpacity style={styles.sendBtn} onPress={this.sendMessage}>
+          <TouchableOpacity style={styles.sendBtn} onPress={this.handleSend}>
             <Text>Send</Text>
           </TouchableOpacity>
-          </View>
+        </View>
 
       </KeyboardAvoidingView>
     );
@@ -105,3 +114,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+const mapStateToProps = state => ({
+    messages: state.messages,
+    nickname: state.nickname
+});
+
+const mapDispatchToProps = dispatch => ({
+    fetchMessages: () => dispatch(fetchMessagesAsync()),
+    send: (message, nickname) => dispatch(addMessage(message, nickname)),
+    logout: () => dispatch(logoutAsync()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(MessagesScreen);
