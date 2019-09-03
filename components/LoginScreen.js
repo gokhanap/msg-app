@@ -2,10 +2,11 @@ import React from 'react';
 import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
 import { loginAsync, fetchUserAsync } from '../actions';
+import { makeId } from '../utils';
 
 class LoginScreen extends React.Component {
   state = {
-    nickname: '',
+    username: '',
     error: false,
   };
 
@@ -15,11 +16,13 @@ class LoginScreen extends React.Component {
   };
 
   handleLogin = async () => {
-    const { nickname } = this.state;
-    const isValid = nickname.trim().length > 1;
+    const { username } = this.state;
+    const isValid = username.trim().length > 1;
 
     if(isValid) {
-      return this.props.login(nickname).then(() => this.props.navigation.navigate('App'));
+      const user = { id: makeId(), name: username };
+
+      return this.props.login(user).then(() => this.props.navigation.navigate('App'));
     }
     this.setState({error: true});
   };
@@ -29,7 +32,7 @@ class LoginScreen extends React.Component {
   };
 
   render() {
-    const { error, nickname } = this.state;
+    const { error, username } = this.state;
 
     return (
       <KeyboardAvoidingView behavior='padding' style={styles.container}>
@@ -37,11 +40,12 @@ class LoginScreen extends React.Component {
           style={styles.input}
           placeholder='Type your name'
           autoCorrect={false}
-          onChangeText={nickname => this.setState({ nickname, error: false })}
-          value={nickname}
+          autoCapitalize='none'
+          onChangeText={username => this.setState({ username, error: false })}
+          value={username}
           />
         {error ?
-          <Text style={styles.error}>Nickname should be at least 2 characters</Text>
+          <Text style={styles.error}>username should be at least 2 characters</Text>
           :
           <TouchableOpacity style={styles.button} onPress={this.handleLogin}>
             <Text>Continue</Text>
@@ -78,11 +82,11 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = state => ({
-    nickname: state.nickname
+    username: state.username
 });
 
 const mapDispatchToProps = dispatch => ({
-  login: (nickname) => dispatch(loginAsync(nickname)),
+  login: (user) => dispatch(loginAsync(user)),
   fetchUser: () => dispatch(fetchUserAsync())
 });
 

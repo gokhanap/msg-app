@@ -17,18 +17,19 @@ class MessagesScreen extends React.Component {
 
   handleSend = async () => {
     const { message } = this.state;
-    const { nickname, send } = this.props;
-    console.log('handlesend', message, nickname);
-    send(message, nickname);
+    const { user, send } = this.props;
+    send(message, user);
     this.setState({message: ''});
   };
 
   componentDidMount() {
-    this.props.fetchMessages();
+    // TODO: uncomment next line and remove hardcoded data from initial store
+    // this.props.fetchMessages();
   };
 
   render() {
-    const { messages, nickname } = this.props;
+    const { message } = this.state;
+    const { messages, user: { name } } = this.props;
 
     return (
       <KeyboardAvoidingView style={styles.container} behavior='padding'>
@@ -39,7 +40,7 @@ class MessagesScreen extends React.Component {
           <TouchableOpacity style={styles.leaveBtn} onPress={this.handleLeave}>
             <Text>Leave</Text>
           </TouchableOpacity>
-          <Text style={styles.title}>{nickname}</Text>
+          <Text style={styles.title}>{name}</Text>
         </View>
 
         <FlatList
@@ -53,10 +54,14 @@ class MessagesScreen extends React.Component {
             style={styles.input}
             placeholder='Type your Message'
             autoCorrect={false}
-            value={this.state.message}
+            value={message}
             onChangeText={message => this.setState({message})}
           />
-          <TouchableOpacity style={styles.sendBtn} onPress={this.handleSend}>
+          <TouchableOpacity
+            style={styles.sendBtn}
+            onPress={this.handleSend}
+            disabled={!message.trim().length}
+          >
             <Text>Send</Text>
           </TouchableOpacity>
         </View>
@@ -117,12 +122,12 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => ({
     messages: state.messages,
-    nickname: state.nickname
+    user: state.user
 });
 
 const mapDispatchToProps = dispatch => ({
     fetchMessages: () => dispatch(fetchMessagesAsync()),
-    send: (message, nickname) => dispatch(addMessage(message, nickname)),
+    send: (message, user) => dispatch(addMessage(message, user)),
     logout: () => dispatch(logoutAsync()),
 });
 

@@ -1,14 +1,15 @@
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
+import { connect } from 'react-redux';
 
-export default class MessageRow extends React.Component {
+class MessageRow extends React.Component {
 
   render() {
-    const { data } = this.props;
-    // console.log(this.props.data);
+    const { data, user: { id } } = this.props;
+    const isAuthor = id === data.user.id;
 
     return (
-      <View style={styles.container}>
+      <View style={isAuthor ? styles.containerReverse : styles.container}>
         <View style={styles.imgContainer}>
           {/* <Image style={styles.img} source={{uri: data.user.avatarUrl}} /> */}
           <Image style={styles.img} />
@@ -28,6 +29,12 @@ const styles = StyleSheet.create({
     padding: 12,
     marginRight: 96,
   },
+  containerReverse: {
+    flex: 1,
+    flexDirection: 'row-reverse',
+    padding: 12,
+    marginRight: 96,
+  },
   imgContainer: {
   },
   img: {
@@ -37,7 +44,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
   },
   textContainer: {
-    marginLeft: 8,
+    marginHorizontal: 8,
     padding: 12,
     backgroundColor: 'powderblue',
     borderColor: 'lightblue',
@@ -48,3 +55,10 @@ const styles = StyleSheet.create({
   text: {
   },
 });
+
+
+const mapStateToProps = state => ({
+  user: state.user
+});
+
+export default connect(mapStateToProps)(MessageRow);

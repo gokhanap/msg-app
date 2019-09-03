@@ -1,14 +1,14 @@
-import { ADD_MESSAGE, RECEIVE_MESSAGES, SET_NICKNAME, REMOVE_NICKNAME } from '../actions';
+import { ADD_MESSAGE, RECEIVE_MESSAGES, ADD_USER, REMOVE_USER } from '../actions';
+import data from '../data';
 
 const initialState = {
-  nickname: '',
-  messages: [],
+  user: {},
+  messages: data,
 };
 
 const appReducer = (state = initialState, action) => {
   switch(action.type) {
     case ADD_MESSAGE:
-      console.log('action.payload', action.payload);
       return {
         ...state,
         messages: state.messages.concat(action.payload)
@@ -18,15 +18,15 @@ const appReducer = (state = initialState, action) => {
         ...state,
         messages: state.messages.concat(action.payload)
       };
-    case SET_NICKNAME:
+    case ADD_USER:
       return {
         ...state,
-        nickname: action.payload
+        user: action.payload
       };
-    case REMOVE_NICKNAME:
+    case REMOVE_USER:
       return {
         ...state,
-        nickname: ''
+        user: {}
       };
     default:
       return state;
