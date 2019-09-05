@@ -1,5 +1,5 @@
 import React from 'react';
-import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
+import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, Image, View } from 'react-native';
 import { connect } from 'react-redux';
 import { loginAsync, fetchUserAsync } from '../actions';
 import { makeId } from '../utils';
@@ -8,11 +8,12 @@ class LoginScreen extends React.Component {
   state = {
     username: '',
     error: false,
+    isLoading: true,
   };
 
   bootstrapAsync = () => {
     this.props.fetchUser()
-    .then(data => data && this.props.navigation.navigate('App'))
+    .then(data => data ? this.props.navigation.navigate('App') : this.setState({isLoading: false}));
   };
 
   handleLogin = async () => {
@@ -32,10 +33,22 @@ class LoginScreen extends React.Component {
   };
 
   render() {
-    const { error, username } = this.state;
+    const { error, username, isLoading } = this.state;
+
+    if(isLoading) {
+      return (
+        <View style={styles.container}>
+          <Text style={styles.title}>Loading</Text>
+        </View>
+      );
+    }
 
     return (
       <KeyboardAvoidingView behavior='padding' style={styles.container}>
+        <View>
+          <Image style={styles.logo} source={require('../assets/logo.jpg')} />
+          <Text style={styles.title}>Leo Message App</Text>
+        </View>
         <TextInput
           style={styles.input}
           placeholder='Type your name'
@@ -62,6 +75,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     marginHorizontal: 32,
     justifyContent: 'center',
+  },
+  logo: {
+    height: 60,
+    width: 60,
+    padding: 12,
+    alignSelf: 'center',
+  },
+  title: {
+    textAlign: 'center',
+    padding: 12,
+    paddingBottom: 48,
+    color: 'gold',
+    textTransform: 'uppercase',
+    fontWeight: 'bold',
   },
   input: {
     backgroundColor: 'whitesmoke',

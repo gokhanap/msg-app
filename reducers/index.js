@@ -1,9 +1,8 @@
 import { ADD_MESSAGE, RECEIVE_MESSAGES, ADD_USER, REMOVE_USER } from '../actions';
-import data from '../data';
 
 const initialState = {
   user: {},
-  messages: data,
+  messages: [],
 };
 
 const appReducer = (state = initialState, action) => {

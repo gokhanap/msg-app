@@ -11,6 +11,18 @@ This is a React Native messaging app that satisfies these requirements.
 - [x] On Message screen display user's nickname on title and leave button
 - [x] Fetch previous messages from external resource
 - [x] User's messages aligned to right side while others aligned to left
-- [ ] New messages come into view with a scroll animation
+- [x] New messages come into view with a scroll animation
 - [x] App persists user session data on Asyncstorage excluding message history
 
+
+## Instructions
+Install all project dependencies and start.
+```bash
+`npm install`
+````
+
+```bash
+npm start
+```
+
+Press a to run on Android device/emulator, or i to run on iOS simulator.

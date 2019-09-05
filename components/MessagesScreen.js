@@ -18,13 +18,13 @@ class MessagesScreen extends React.Component {
   handleSend = async () => {
     const { message } = this.state;
     const { user, send } = this.props;
+
     send(message, user);
     this.setState({message: ''});
   };
 
   componentDidMount() {
-    // TODO: uncomment next line and remove hardcoded data from initial store
-    // this.props.fetchMessages();
+    !this.props.messages.length && this.props.fetchMessages();
   };
 
   render() {
@@ -32,30 +32,31 @@ class MessagesScreen extends React.Component {
     const { messages, user: { name } } = this.props;
 
     return (
-      <KeyboardAvoidingView style={styles.container} behavior='padding'>
-
+      <View style={styles.container}>
         <StatusBar barStyle="light-content" />
-
         <View style={styles.header}>
           <TouchableOpacity style={styles.leaveBtn} onPress={this.handleLeave}>
             <Text>Leave</Text>
           </TouchableOpacity>
           <Text style={styles.title}>{name}</Text>
         </View>
-
-        <FlatList
-          data={messages}
+        <FlatList 
+          ref={(list) => this.msgFlatList = list}
+          data={messages.sort((a,b)=> b.timestamp - a.timestamp)} // sort messages by date
           keyExtractor={(item) => item.id.toString()}
           renderItem={({item}) => <MessageRow data={item} />}
+          inverted
         />
-
+      <KeyboardAvoidingView behavior='padding'>
         <View style={styles.form}>
           <TextInput
             style={styles.input}
             placeholder='Type your Message'
             autoCorrect={false}
+            autoCapitalize='none'
             value={message}
             onChangeText={message => this.setState({message})}
+            blurOnSubmit={true}
           />
           <TouchableOpacity
             style={styles.sendBtn}
@@ -65,8 +66,8 @@ class MessagesScreen extends React.Component {
             <Text>Send</Text>
           </TouchableOpacity>
         </View>
-
       </KeyboardAvoidingView>
+      </View>
     );
   }
 }
@@ -79,12 +80,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 16,
     paddingTop: 20 + Constants.statusBarHeight,
-    backgroundColor: 'salmon',
+    backgroundColor: 'darkslategray',
     alignItems: 'center',
   },
   title: {
     marginLeft: 'auto',
     marginRight: 'auto',
+    color: 'white',
   },
   form: {
     flexDirection: 'row',
@@ -100,14 +102,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderTopLeftRadius: 12,
     borderBottomLeftRadius: 12,
-    // borderColor: '#111111',
-    // borderWidth: 1,
   },
   leaveBtn: {
-    borderRadius: 12,
+    borderRadius: 10,
     alignItems: 'center',
     backgroundColor: 'gold',
-    padding: 12,
+    padding: 10,
   },
   sendBtn: {
     borderTopRightRadius: 12,
